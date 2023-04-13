@@ -15,6 +15,8 @@ export default {
 
 		if (!partyCategory) return;
 
+		if (newMem.voice === undefined || oldMem.voice === undefined) return; // temporary
+
 		if (!newMem.voice.channel) {
 			const leaveChannel = oldMem.voice.channel;
 
