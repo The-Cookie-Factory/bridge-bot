@@ -20,6 +20,7 @@ class Bot {
 			IntentsBitField.Flags.Guilds,
 			IntentsBitField.Flags.GuildMessages,
 			IntentsBitField.Flags.GuildVoiceStates,
+			IntentsBitField.Flags.GuildMembers,
 			IntentsBitField.Flags.MessageContent,
 		],
 	});

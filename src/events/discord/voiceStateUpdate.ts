@@ -5,7 +5,9 @@ export default {
 	name: "voiceStateUpdate",
 	runOnce: true,
 	run: async (_, oldMem: GuildMember, newMem: GuildMember) => {
-		const createChannel = newMem.guild.channels.cache.get(process.env.PARTY_CHANNEL_ID) as BaseGuildVoiceChannel;
+		const createChannel = (await newMem.guild.channels
+			.fetch(process.env.PARTY_CHANNEL_ID)
+			.catch(null)) as BaseGuildVoiceChannel;
 
 		if (!createChannel) return;
 
