@@ -4,7 +4,7 @@ import { BaseGuildVoiceChannel, ChannelType, GuildMember, VoiceChannel } from "d
 export default {
 	name: "voiceStateUpdate",
 	runOnce: true,
-	run: async (bot, oldMem: GuildMember, newMem: GuildMember) => {
+	run: async (_, oldMem: GuildMember, newMem: GuildMember) => {
 		const createChannel = newMem.guild.channels.cache.get(process.env.PARTY_CHANNEL_ID) as BaseGuildVoiceChannel;
 
 		if (!createChannel) return;
