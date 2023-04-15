@@ -5,6 +5,7 @@ export default {
 	name: "voiceStateUpdate",
 	runOnce: true,
 	run: async (_, oldState: VoiceState, newState: VoiceState) => {
+		console.log(newState.member, oldState.member);
 		if (!oldState.member || !newState.member) return;
 
 		const createChannel = (await newState.guild.channels
