@@ -20,11 +20,7 @@ export default {
 		if (!newState.channel) {
 			const leaveChannel = oldState.channel;
 
-			console.log(leaveChannel === undefined);
-
 			if (!leaveChannel) return;
-
-			console.log(leaveChannel.parent?.id, partyCategory.id);
 
 			if (leaveChannel.parent?.id !== partyCategory.id) return;
 
