@@ -35,12 +35,13 @@ export default {
 
 			if (joinChannel.parent?.id !== partyCategory.id) return;
 
-			if (joinChannel.id === process.env.PARTY_CHANNEL_ID) {
+			if (joinChannel.id === process.env.PARTY_CHANNEL_ID && newState.channel.parent) {
 				// they joined the create channel
 				const newPartyChannel = (await newState.guild.channels
 					.create({
 						type: ChannelType.GuildVoice,
 						name: `${newState.member.displayName}'s party`,
+						parent: newState.channel.parent,
 					})
 					.catch(() => null)) as VoiceChannel | null;
 
