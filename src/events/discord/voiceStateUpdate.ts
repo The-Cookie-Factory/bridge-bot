@@ -1,11 +1,15 @@
 import { Event } from "../../interfaces/Event";
-import { BaseGuildVoiceChannel, ChannelType, GuildMember, VoiceChannel } from "discord.js";
+import { BaseGuildVoiceChannel, ChannelType, VoiceChannel, VoiceState } from "discord.js";
 
 export default {
 	name: "voiceStateUpdate",
 	runOnce: true,
-	run: async (_, oldMem: GuildMember, newMem: GuildMember) => {
-		const createChannel = newMem.guild.channels.cache.get(process.env.PARTY_CHANNEL_ID) as BaseGuildVoiceChannel;
+	run: async (_, oldState: VoiceState, newState: VoiceState) => {
+		if (!oldState.member || !newState.member) return;
+
+		const createChannel = (await newState.guild.channels
+			.fetch(process.env.PARTY_CHANNEL_ID)
+			.catch(null)) as BaseGuildVoiceChannel;
 
 		if (!createChannel) return;
 
@@ -13,8 +17,8 @@ export default {
 
 		if (!partyCategory) return;
 
-		if (!newMem.voice.channel) {
-			const leaveChannel = oldMem.voice.channel;
+		if (!newState.channel) {
+			const leaveChannel = oldState.channel;
 
 			if (!leaveChannel) return;
 
@@ -27,18 +31,18 @@ export default {
 				}
 			}
 		} else {
-			const joinChannel = newMem.voice.channel;
+			const joinChannel = newState.channel;
 
 			if (joinChannel.parent?.id !== partyCategory.id) return;
 
 			if (joinChannel.id === process.env.PARTY_CHANNEL_ID) {
 				// they joined the create channel
-				const newPartyChannel = (await newMem.guild.channels.create({
+				const newPartyChannel = (await newState.guild.channels.create({
 					type: ChannelType.GuildVoice,
-					name: `${newMem.user.username}'s party`,
+					name: `${newState.member.displayName}'s party`,
 				})) as VoiceChannel;
 
-				newMem.voice.setChannel(newPartyChannel);
+				newState.setChannel(newPartyChannel);
 			}
 		}
 	},
