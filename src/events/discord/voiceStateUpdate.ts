@@ -3,9 +3,8 @@ import { BaseGuildVoiceChannel, ChannelType, VoiceChannel, VoiceState } from "di
 
 export default {
 	name: "voiceStateUpdate",
-	runOnce: true,
+	runOnce: false,
 	run: async (_, oldState: VoiceState, newState: VoiceState) => {
-		console.log(!!newState.member, !!oldState.member);
 		if (!oldState.member || !newState.member) return;
 
 		const createChannel = (await newState.guild.channels
