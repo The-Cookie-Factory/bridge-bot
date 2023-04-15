@@ -37,10 +37,17 @@ export default {
 
 			if (joinChannel.id === process.env.PARTY_CHANNEL_ID) {
 				// they joined the create channel
-				const newPartyChannel = (await newState.guild.channels.create({
-					type: ChannelType.GuildVoice,
-					name: `${newState.member.displayName}'s party`,
-				})) as VoiceChannel;
+				const newPartyChannel = (await newState.guild.channels
+					.create({
+						type: ChannelType.GuildVoice,
+						name: `${newState.member.displayName}'s party`,
+					})
+					.catch(() => null)) as VoiceChannel | null;
+
+				if (!newPartyChannel) {
+					console.log("Bot does not have permission to create channels");
+					return;
+				}
 
 				newState.setChannel(newPartyChannel);
 			}
