@@ -36,7 +36,7 @@ const command: Command = {
 				type: ApplicationCommandOptionType.Subcommand,
 				options: [
 					{
-						name: "shouldlock",
+						name: "shouldLock",
 						description: "Whether to lock the channel or not",
 						type: ApplicationCommandOptionType.Boolean,
 						required: true,
