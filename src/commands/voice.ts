@@ -36,7 +36,7 @@ const command: Command = {
 				type: ApplicationCommandOptionType.Subcommand,
 				options: [
 					{
-						name: "shouldLock",
+						name: "shouldlock",
 						description: "Whether to lock the channel or not",
 						type: ApplicationCommandOptionType.Boolean,
 						required: true,
@@ -254,7 +254,7 @@ const command: Command = {
 
 				const locked = partyChannelLocks.get(voiceChannel.id)!;
 
-				const shouldLock = interaction.options.getBoolean("shouldLock", true);
+				const shouldLock = interaction.options.getBoolean("shouldlock", true);
 
 				if (locked === shouldLock) {
 					await interaction.reply({
