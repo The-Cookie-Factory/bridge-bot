@@ -1,4 +1,4 @@
-import { partyChannelOwners } from "../events/discord/voiceStateUpdate";
+import { partyChannelLocks, partyChannelOwners } from "../events/discord/voiceStateUpdate";
 import { Command } from "../interfaces/Command";
 import { ApplicationCommandOptionType, BaseGuildVoiceChannel } from "discord.js";
 
@@ -29,6 +29,19 @@ const command: Command = {
 				name: "hijack",
 				description: "Hijacks a party voice channel (staff only)",
 				type: ApplicationCommandOptionType.Subcommand,
+			},
+			{
+				name: "lock",
+				description: "Locks a party voice channel",
+				type: ApplicationCommandOptionType.Subcommand,
+				options: [
+					{
+						name: "shouldlock",
+						description: "Whether to lock the channel or not",
+						type: ApplicationCommandOptionType.Boolean,
+						required: true,
+					},
+				],
 			},
 		],
 	},
@@ -98,9 +111,11 @@ const command: Command = {
 
 		const subcommand = interaction.options.getSubcommand(true);
 
+		const isOwner = partyChannelOwners.get(voiceChannel.id) !== interaction.member.id;
+
 		switch (subcommand) {
 			case "name": {
-				if (partyChannelOwners.get(voiceChannel.id) !== interaction.member.id) {
+				if (isOwner) {
 					await interaction.reply({
 						embeds: [
 							{
@@ -216,6 +231,57 @@ const command: Command = {
 						{
 							title: "Took over the channel",
 							description: "You are now the owner of this party voice channel",
+							color: 0x00ff00,
+						},
+					],
+				});
+
+				break;
+			}
+			case "lock": {
+				if (isOwner) {
+					await interaction.reply({
+						embeds: [
+							{
+								title: "Error",
+								description: "You are not the owner of this party voice channel",
+								color: 0xff0000,
+							},
+						],
+					});
+					return;
+				}
+
+				partyChannelLocks.set(voiceChannel.id, !!partyChannelLocks.get(voiceChannel.id)); // get rid of a possible undefined
+
+				const locked = partyChannelLocks.get(voiceChannel.id)!;
+
+				const shouldLock = interaction.options.getBoolean("shouldLock", true);
+
+				if (locked === shouldLock) {
+					await interaction.reply({
+						embeds: [
+							{
+								title: "Error",
+								description: `This party voice channel is already ${locked ? "locked" : "unlocked"}`,
+								color: 0xff0000,
+							},
+						],
+					});
+					return;
+				}
+
+				partyChannelLocks.set(voiceChannel.id, shouldLock);
+
+				voiceChannel.permissionOverwrites.edit(interaction.guild.roles.everyone, {
+					Connect: !shouldLock,
+				});
+
+				await interaction.reply({
+					embeds: [
+						{
+							title: `${shouldLock ? "Locked" : "Unlocked"} the channel`,
+							description: `You ${shouldLock ? "locked" : "unlocked"} this party voice channel`,
 							color: 0x00ff00,
 						},
 					],

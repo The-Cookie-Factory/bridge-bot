@@ -2,6 +2,7 @@ import { Event } from "../../interfaces/Event";
 import { BaseGuildVoiceChannel, ChannelType, VoiceChannel, VoiceState } from "discord.js";
 
 export const partyChannelOwners = new Map<string, string>(); // id: userid
+export const partyChannelLocks = new Map<string, boolean>(); // id: locked or not
 
 export default {
 	name: "voiceStateUpdate",
@@ -31,6 +32,7 @@ export default {
 				if (leaveChannel.members.size === 0) {
 					leaveChannel.delete();
 					partyChannelOwners.delete(leaveChannel.id);
+					partyChannelLocks.delete(leaveChannel.id);
 				}
 			}
 		} else {
@@ -56,6 +58,7 @@ export default {
 				newState.setChannel(newPartyChannel);
 
 				partyChannelOwners.set(newPartyChannel.id, newState.member.id);
+				partyChannelLocks.set(newPartyChannel.id, false);
 			}
 		}
 	},
