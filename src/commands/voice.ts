@@ -252,8 +252,6 @@ const command: Command = {
 					return;
 				}
 
-				partyChannelLocks.set(voiceChannel.id, !!partyChannelLocks.get(voiceChannel.id)); // get rid of a possible undefined
-
 				const locked = partyChannelLocks.get(voiceChannel.id)!;
 
 				const shouldLock = interaction.options.getBoolean("shouldLock", true);
