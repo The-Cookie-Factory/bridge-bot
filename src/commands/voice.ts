@@ -32,7 +32,7 @@ const command: Command = {
 			},
 			{
 				name: "lock",
-				description: "Locks a party voice channel",
+				description: "Locks/unlucks a party voice channel",
 				type: ApplicationCommandOptionType.Subcommand,
 				options: [
 					{
