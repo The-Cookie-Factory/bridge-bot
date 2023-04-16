@@ -111,11 +111,11 @@ const command: Command = {
 
 		const subcommand = interaction.options.getSubcommand(true);
 
-		const isOwner = partyChannelOwners.get(voiceChannel.id) !== interaction.member.id;
+		const isNotOwner = partyChannelOwners.get(voiceChannel.id) !== interaction.member.id;
 
 		switch (subcommand) {
 			case "name": {
-				if (isOwner) {
+				if (isNotOwner) {
 					await interaction.reply({
 						embeds: [
 							{
@@ -236,7 +236,7 @@ const command: Command = {
 				break;
 			}
 			case "lock": {
-				if (isOwner) {
+				if (isNotOwner) {
 					await interaction.reply({
 						embeds: [
 							{
@@ -248,8 +248,7 @@ const command: Command = {
 					});
 					return;
 				}
-
-				const locked = partyChannelLocks.get(voiceChannel.id)!;
+				const locked = partyChannelLocks.has(voiceChannel.id) ?? false;
 
 				const shouldLock = interaction.options.getBoolean("shouldlock", true);
 
