@@ -1,6 +1,8 @@
 import { Event } from "../../interfaces/Event";
 import { BaseGuildVoiceChannel, ChannelType, VoiceChannel, VoiceState } from "discord.js";
 
+export const partyChannelOwners = new Map<string, string>(); // id: userid
+
 export default {
 	name: "voiceStateUpdate",
 	runOnce: false,
@@ -28,6 +30,7 @@ export default {
 				// they left one of the party channels
 				if (leaveChannel.members.size === 0) {
 					leaveChannel.delete();
+					partyChannelOwners.delete(leaveChannel.id);
 				}
 			}
 		} else {
@@ -51,6 +54,8 @@ export default {
 				}
 
 				newState.setChannel(newPartyChannel);
+
+				partyChannelOwners.set(newPartyChannel.id, newState.member.id);
 			}
 		}
 	},
