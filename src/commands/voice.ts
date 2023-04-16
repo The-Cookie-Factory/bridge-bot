@@ -20,6 +20,16 @@ const command: Command = {
 					},
 				],
 			},
+			{
+				name: "claim",
+				description: "Claims ownership over a party voice channel if the owner has left",
+				type: ApplicationCommandOptionType.Subcommand,
+			},
+			{
+				name: "hijack",
+				description: "Hijacks a party voice channel (staff only)",
+				type: ApplicationCommandOptionType.Subcommand,
+			},
 		],
 	},
 	run: async (_, interaction) => {
@@ -86,23 +96,23 @@ const command: Command = {
 			return;
 		}
 
-		if (partyChannelOwners.get(voiceChannel.id) !== interaction.member.id) {
-			await interaction.reply({
-				embeds: [
-					{
-						title: "Error",
-						description: "You are not the owner of this party voice channel",
-						color: 0xff0000,
-					},
-				],
-			});
-			return;
-		}
-
 		const subcommand = interaction.options.getSubcommand(true);
 
 		switch (subcommand) {
 			case "name": {
+				if (partyChannelOwners.get(voiceChannel.id) !== interaction.member.id) {
+					await interaction.reply({
+						embeds: [
+							{
+								title: "Error",
+								description: "You are not the owner of this party voice channel",
+								color: 0xff0000,
+							},
+						],
+					});
+					return;
+				}
+
 				const name = interaction.options.getString("name", true);
 
 				if (name.length > 24) {
@@ -125,6 +135,87 @@ const command: Command = {
 						{
 							title: "Changed the name",
 							description: `Changed the name of your party voice channel to \`${name}\``,
+							color: 0x00ff00,
+						},
+					],
+				});
+
+				break;
+			}
+			case "claim": {
+				const owner = partyChannelOwners.get(voiceChannel.id);
+
+				if (owner === interaction.member.id) {
+					await interaction.reply({
+						embeds: [
+							{
+								title: "Error",
+								description: "You are already the owner of this party voice channel",
+								color: 0xff0000,
+							},
+						],
+					});
+					return;
+				}
+
+				if (owner && voiceChannel.members.has(owner)) {
+					await interaction.reply({
+						embeds: [
+							{
+								title: "Error",
+								description: "The owner of this party voice channel is still in the channel",
+								color: 0xff0000,
+							},
+						],
+					});
+					return;
+				}
+
+				partyChannelOwners.set(voiceChannel.id, interaction.member.id);
+
+				await interaction.reply({
+					embeds: [
+						{
+							title: "Claimed the channel",
+							description: "You are now the owner of this party voice channel",
+							color: 0x00ff00,
+						},
+					],
+				});
+
+				break;
+			}
+			case "hijack": {
+				// this is subject to change
+				const allowedRoles = [
+					"569670238644338709", // billy's role
+					"778750457291997204", // admin role
+					"569670445012353035", // community manager role
+					"598146311514226698", // dev role (here for testing but will be removed later)
+				];
+
+				const roles = interaction.member.roles.cache.map((role) => role.id);
+
+				if (!roles.some((role) => allowedRoles.includes(role))) {
+					await interaction.reply({
+						embeds: [
+							{
+								title: "Not for you :)",
+								description: "This is staff only",
+								color: 0xff0000,
+							},
+						],
+					});
+					return;
+				}
+
+				partyChannelOwners.set(voiceChannel.id, interaction.member.id);
+
+				await interaction.reply({
+					embeds: [
+						{
+							title: "Took over the channel",
+							description: "You are now the owner of this party voice channel",
 							color: 0x00ff00,
 						},
 					],
