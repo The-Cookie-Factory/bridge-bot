@@ -23,15 +23,17 @@ const command: Command = {
 		],
 	},
 	run: async (_, interaction) => {
+		const wtfembed = [
+			{
+				title: "Error",
+				description: "Something went wrong, please try again later",
+				color: 0xff0000,
+			},
+		];
+
 		if (!interaction.guild || !interaction.member || !("voice" in interaction.member)) {
 			await interaction.reply({
-				embeds: [
-					{
-						title: "Error",
-						description: "Something went wrong, please try again later",
-						color: 0xff0000,
-					},
-				],
+				embeds: wtfembed,
 			});
 			return;
 		}
@@ -40,11 +42,21 @@ const command: Command = {
 			.fetch(process.env.PARTY_CHANNEL_ID)
 			.catch(null)) as BaseGuildVoiceChannel | null;
 
-		if (!createChannel) return;
+		if (!createChannel) {
+			await interaction.reply({
+				embeds: wtfembed,
+			});
+			return;
+		}
 
 		const partyCategory = createChannel.parent;
 
-		if (!partyCategory) return;
+		if (!partyCategory) {
+			await interaction.reply({
+				embeds: wtfembed,
+			});
+			return;
+		}
 
 		const voiceChannel = interaction.member.voice.channel as BaseGuildVoiceChannel | null;
 
@@ -122,13 +134,7 @@ const command: Command = {
 			}
 			default: {
 				await interaction.reply({
-					embeds: [
-						{
-							title: "Error",
-							description: "Something went wrong, please try again later",
-							color: 0xff0000,
-						},
-					],
+					embeds: wtfembed,
 				});
 				return;
 			}
