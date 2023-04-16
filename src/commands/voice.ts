@@ -248,9 +248,10 @@ const command: Command = {
 					});
 					return;
 				}
-				const locked = partyChannelLocks.has(voiceChannel.id) ?? false;
 
 				const shouldLock = interaction.options.getBoolean("shouldlock", true);
+				
+				const locked = partyChannelLocks.get(voiceChannel.id) ?? !shouldLock;
 
 				if (locked === shouldLock) {
 					await interaction.reply({
